@@ -8,7 +8,6 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeMethod;
 
 public class BaseTest {
@@ -17,40 +16,32 @@ public class BaseTest {
 
     @BeforeMethod
     public void setUp() {
-        String browserType = ConfigReader.getProperty("browser");
-        driver = WebDriverFactory.createWebDriver(browserType);
+        driver = WebDriverFactory.createWebDriver();
         driver.get(ConfigReader.getProperty("loginUrl"));
     }
 
-    @AfterTest
-    public void tearDownAfterTest() {
-        if (driver != null) {
-            driver.quit();
-        }
-    }
 
     @AfterMethod
-    public void tearDown() {
+    public void tearDown(ITestResult result) {
+
+        if (result.getStatus() == ITestResult.FAILURE) {
+            try {
+                Thread.sleep(500);
+                byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
+                saveScreenshotToAllure(screenshot);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         if (driver != null) {
             driver.quit();
         }
     }
 
-//    @AfterMethod
-//    public void embedScreenshot(ITestResult result) {
-//        if (result.getStatus() == ITestResult.FAILURE) {
-//            try {
-//                byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
-//                saveScreenshotToAllure(screenshot);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
-//
-//    @Attachment(value = "Screenshot", type = "image/png", fileExtension = "png")
-//    public byte[] saveScreenshotToAllure(byte[] screenshot) {
-//        return screenshot;
-//    }
+    @Attachment(value = "Screenshot", type = "image/png", fileExtension = "png")
+    public byte[] saveScreenshotToAllure(byte[] screenshot) {
+        return screenshot;
+    }
 
 }

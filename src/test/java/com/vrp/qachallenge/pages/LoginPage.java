@@ -11,7 +11,7 @@ public class LoginPage extends BasePage{
     @FindBy(id = "password")
     public WebElement inputPassword;
     @FindBy(id = "Login")
-    public WebElement inputLogin;
+    public WebElement buttonLogin;
     @FindBy(id = "rememberUn")
     public WebElement checkboxRememberMe;
     @FindBy(id = "forgot_password_link")
@@ -22,9 +22,9 @@ public class LoginPage extends BasePage{
     }
 
     public void login(String username, String password) {
-        inputUsername.sendKeys(username);
-        inputPassword.sendKeys(password);
-        inputLogin.click();
+        sendKeysToElement(inputUsername, username);
+        sendKeysToElement(inputPassword, password);
+        clickOnElement(buttonLogin);
     }
 
 }

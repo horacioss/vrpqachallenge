@@ -9,7 +9,10 @@ public class OrgAccountDataProvider {
 
     @DataProvider(name = "getTestData")
     public Object[][] getTestData() {
-        List<OrgAccountModel> testDataList = CSVReader.readCSV("OrgAccountsData.csv", OrgAccountModel.class);
+
+        String path = String.format("data/%s", ConfigReader.getProperty("orgAccountsDataFile"));
+
+        List<OrgAccountModel> testDataList = CSVReader.readCSV(path, OrgAccountModel.class);
 
         Object[][] testDataArray = new Object[testDataList.size()][1];
         for (int i = 0; i < testDataList.size(); i++) {

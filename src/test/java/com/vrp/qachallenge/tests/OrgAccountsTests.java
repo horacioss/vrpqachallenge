@@ -3,24 +3,14 @@ package com.vrp.qachallenge.tests;
 import com.vrp.qachallenge.models.OrgAccountModel;
 import com.vrp.qachallenge.pages.AccountsPage;
 import com.vrp.qachallenge.pages.LoginPage;
-import com.vrp.qachallenge.pages.NavBar;
 import com.vrp.qachallenge.utils.ConfigReader;
 import com.vrp.qachallenge.utils.OrgAccountDataProvider;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.time.Duration;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.AssertJUnit.assertTrue;
 
 public class OrgAccountsTests extends BaseTest {
 
     LoginPage loginPage;
-    NavBar navBar;
     AccountsPage accountsPage;
 
     @BeforeMethod
@@ -30,13 +20,9 @@ public class OrgAccountsTests extends BaseTest {
 
         loginPage = new LoginPage(driver);
         loginPage.login(username, password);
-        navBar = new NavBar(driver);
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.elementToBeClickable(navBar.accountsTab));
-        navBar.accountsTab.click();
+        loginPage.openAccountsPage();
         accountsPage = new AccountsPage(driver);
     }
-
 
 
     @Test(
@@ -46,15 +32,9 @@ public class OrgAccountsTests extends BaseTest {
             dataProviderClass = OrgAccountDataProvider.class
     )
     public void testCreateOrgAccount(OrgAccountModel accountData) {
-
         accountsPage.createNewAccountWithName(accountData.getAccountName());
-        assertTrue(accountsPage.alertMessage.isDisplayed());
-        assertEquals(
-                accountsPage.alertMessage.getText(),
-                String.format("Account \"%s\" was created.", accountData.getAccountName())
-        );
-        navBar.accountsTab.click();
-        assertTrue(accountsPage.isAccountPresent(accountData.getAccountName()));
+        accountsPage.openAccountsPage();
+        accountsPage.isAccountPresent(accountData.getAccountName());
     }
 
 
@@ -66,13 +46,8 @@ public class OrgAccountsTests extends BaseTest {
     )
     public void testEditOrgAccount(OrgAccountModel accountData) {
         accountsPage.editAccountWithName(accountData);
-        assertTrue(accountsPage.alertMessage.isDisplayed());
-        assertEquals(
-                accountsPage.alertMessage.getText(),
-                String.format("Account \"%s\" was saved.", accountData.getNewAccountName())
-        );
-        navBar.accountsTab.click();
-        assertTrue(accountsPage.isAccountPresent(accountData.getNewAccountName()));
+        accountsPage.openAccountsPage();
+        accountsPage.isAccountPresent(accountData.getNewAccountName());
     }
 
 
@@ -85,10 +60,5 @@ public class OrgAccountsTests extends BaseTest {
     )
     public void testDeleteOrgAccount(OrgAccountModel accountData) {
         accountsPage.deleteAccountWithName(accountData.getNewAccountName());
-        assertTrue(accountsPage.alertMessage.isDisplayed());
-        assertEquals(
-                accountsPage.alertMessage.getText(),
-                String.format("Account \"%s\" was deleted. Undo", accountData.getNewAccountName())
-        );
     }
 }

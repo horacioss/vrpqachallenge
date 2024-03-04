@@ -6,6 +6,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
+import static org.testng.AssertJUnit.assertTrue;
+
 public class AccountsPage extends BasePage {
 
     // List Accounts Elements
@@ -17,9 +19,9 @@ public class AccountsPage extends BasePage {
     public WebElement accountNameInput;
     @FindBy(xpath = "//flexipage-field[contains(@data-field-id, 'RecordPhoneField')]//input[@name='Phone']")
     public WebElement accountPhoneInput;
-    @FindBy(xpath = "//flexipage-field[contains(@data-field-id, 'RecordTypeField')]//button[@role='combobox']")
+    @FindBy(xpath = "(//flexipage-field[contains(@data-field-id, 'RecordTypeField')])[2]//button[@role='combobox']")
     public WebElement accountTypeButtonCombobox;
-    @FindBy(xpath = "//flexipage-field[contains(@data-field-id, 'RecordIndustryField')]//button[@role='combobox']")
+    @FindBy(xpath = "(//flexipage-field[contains(@data-field-id, 'RecordIndustryField')])[2]//button[@role='combobox']")
     public WebElement accountIndustryButtonCombobox;
     public WebElement accountTypeOrIndustryOptionWithName(String typeOrIndustry, String name) {
         return driver.findElement(
@@ -71,35 +73,33 @@ public class AccountsPage extends BasePage {
 
     // Actions
     public void createNewAccountWithName(String accountName) {
-        newAccountButton.click();
-        accountNameInput.sendKeys(accountName);
-        saveEditButton.click();
+        clickOnElement(newAccountButton);
+        sendKeysToElement(accountNameInput, accountName);
+        clickOnElement(saveEditButton);
+        validateAlertMessage(String.format("Account \"%s\" was created.", accountName));
     }
     public void editAccountWithName(OrgAccountModel accountData) {
-        labelAccountWithName(accountData.getAccountName()).click();
-        editAccountButton.click();
-        accountNameInput.clear();
-        accountNameInput.sendKeys(accountData.getNewAccountName());
-        accountPhoneInput.clear();
-        accountPhoneInput.sendKeys(accountData.getPhone());
-        accountTypeButtonCombobox.click();
-        accountTypeOrIndustryOptionWithName("Type", accountData.getAccountType()).click();
-        accountIndustryButtonCombobox.click();
-        accountTypeOrIndustryOptionWithName("Industry", accountData.getAccountIndustry()).click();
-        accountWebsiteInput.clear();
-        accountWebsiteInput.sendKeys(accountData.getWebsite());
-        accountDescriptionInput.clear();
-        accountDescriptionInput.sendKeys(accountData.getDescription());
-        accountNumberOfEmployeesInput.clear();
-        accountNumberOfEmployeesInput.sendKeys(accountData.getEmployeesCount());
-        saveEditButton.click();
+        clickOnElement(labelAccountWithName(accountData.getAccountName()));
+        clickOnElement(editAccountButton);
+        sendKeysToElement(accountNameInput, accountData.getNewAccountName());
+        sendKeysToElement(accountPhoneInput, accountData.getPhone());
+        clickOnElement(accountTypeButtonCombobox);
+        clickOnElement(accountTypeOrIndustryOptionWithName("Type", accountData.getAccountType()));
+        clickOnElement(accountIndustryButtonCombobox);
+        clickOnElement(accountTypeOrIndustryOptionWithName("Industry", accountData.getAccountIndustry()));
+        sendKeysToElement(accountWebsiteInput, accountData.getWebsite());
+        sendKeysToElement(accountDescriptionInput, accountData.getDescription());
+        sendKeysToElement(accountNumberOfEmployeesInput, accountData.getEmployeesCount());
+        clickOnElement(saveEditButton);
+        validateAlertMessage(String.format("Account \"%s\" was saved.", accountData.getNewAccountName()));
     }
     public void deleteAccountWithName(String accountName) {
         labelAccountWithName(accountName).click();
-        deleteAccountButton.click();
-        confirmDeleteButton.click();
+        clickOnElement(deleteAccountButton);
+        clickOnElement(confirmDeleteButton);
+        validateAlertMessage(String.format("Account \"%s\" was deleted. Undo XD ", accountName));
     }
-    public boolean isAccountPresent(String accountName) {
-        return labelAccountWithName(accountName).isDisplayed();
+    public void isAccountPresent(String accountName) {
+        assertTrue( "The account label was not in the list.", labelAccountWithName(accountName).isDisplayed());
     }
 }

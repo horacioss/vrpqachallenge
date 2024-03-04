@@ -5,6 +5,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
+
+import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertTrue;
 
 public class BasePage {
 
@@ -29,28 +35,36 @@ public class BasePage {
         return driver.getCurrentUrl();
     }
 
-    public void close() {
-        driver.quit();
+    public void waitForElementToBeVisible(WebElement element) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(webDriver -> element.isDisplayed());
     }
 
-    public void back() {
-        driver.navigate().back();
+    public void waitForElementToBeClickable(WebElement element) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(webDriver -> element.isEnabled());
     }
 
-    public void refresh() {
-        driver.navigate().refresh();
+    public void clickOnElement(WebElement element) {
+        waitForElementToBeVisible(element);
+        waitForElementToBeClickable(element);
+        element.click();
     }
 
-    public void maximize() {
-        driver.manage().window().maximize();
+    public void sendKeysToElement(WebElement element, String text) {
+        waitForElementToBeVisible(element);
+        element.clear();
+        element.sendKeys(text);
     }
 
-    public void deleteAllCookies() {
-        driver.manage().deleteAllCookies();
-    }
-
-    public void openAccountsPage1() {
+    public void openAccountsPage() {
         openRelativeUrl("/o/Account/list");
+    }
+
+    public void validateAlertMessage(String message) {
+        waitForElementToBeVisible(alertMessage);
+        assertTrue(alertMessage.isDisplayed());
+        assertEquals(message, alertMessage.getText());
     }
 
 }
